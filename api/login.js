@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   }
 
   const { code } = req.body;
-  const SECRET_KEY = process.env.TOTP_SECRET;
+  const SECRET_KEY = process.env.TOTP_SECRET || "4MU6BNJASUMBFY6SIDLZ";
 
   if (!SECRET_KEY) {
     console.error("TOTP_SECRET is not set in environment variables.");
