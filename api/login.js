@@ -1,4 +1,4 @@
-import { authenticator } from "otplib";
+import { authenticator } from "./node_modules/otplib/index.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
