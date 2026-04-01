@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 
 const Login = ({ onLogin }) => {
-    const [password, setPassword] = useState(""); // This will now hold the 6-digit Authenticator code
+    const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage(""); // Clear previous errors
-
-        // Frontend validation for code format
-        if (password.length !== 6 || !/^\d{6}$/.test(password)) {
-            setErrorMessage("Please enter a valid 6-digit code from your Authenticator app.");
-            return;
-        }
 
         try {
             const response = await fetch("/api/login", {
@@ -20,16 +14,16 @@ const Login = ({ onLogin }) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ code: password }), // Send only the 6-digit code
+                body: JSON.stringify({ password }), // Send the password
             });
 
             const data = await response.json();
 
-            if (response.ok && data.isAdmin) {
+            if (response.ok && data.success) {
                 sessionStorage.setItem("isAdmin", "true");
                 onLogin(true);
             } else {
-                setErrorMessage(data.message || "Login failed. Please check your Authenticator code.");
+                setErrorMessage(data.message || "Login failed. Please check your password.");
             }
         } catch (error) {
             console.error("Login error:", error);
@@ -45,16 +39,15 @@ const Login = ({ onLogin }) => {
 
                 <div className="mb-8">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                        6-Digit Authenticator Code
+                        Password
                     </label>
                     <input
                         className="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         type="password"
                         id="password"
-                        placeholder="Enter 6-digit code"
+                        placeholder="Enter your password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        maxLength="6"
                         required
                     />
                 </div>
@@ -70,13 +63,6 @@ const Login = ({ onLogin }) => {
                     {errorMessage}
                 </p>
 
-                <div className="mt-10 p-5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] text-blue-800 leading-relaxed">
-                    <p className="font-bold mb-2 text-blue-900 uppercase tracking-wider text-[10px]">How to Log In:</p>
-                    <ol className="list-decimal list-inside space-y-1">
-                        <li>Get the current 6-digit code from your Google Authenticator app.</li>
-                        <li>Enter the full 6-digit code.</li>
-                    </ol>
-                </div>
             </form>
         </div>
     );

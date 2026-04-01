@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
-    "otplib": "^13.4.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
