@@ -1,33 +1,21 @@
 import React, { useState } from 'react';
+import { verifyAdminPassword } from '../utils/auth';
 
 const Login = ({ onLogin }) => {
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setErrorMessage(""); // Clear previous errors
+        setErrorMessage("");
 
-        try {
-            const response = await fetch("/api/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ password }), // Send the password
-            });
+        const isValid = verifyAdminPassword(password);
 
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                sessionStorage.setItem("isAdmin", "true");
-                onLogin(true);
-            } else {
-                setErrorMessage(data.message || "Login failed. Please check your password.");
-            }
-        } catch (error) {
-            console.error("Login error:", error);
-            setErrorMessage("Connection Error: Could not reach the login service.");
+        if (isValid) {
+            sessionStorage.setItem("isAdmin", "true");
+            onLogin(true);
+        } else {
+            setErrorMessage("Invalid password.");
         }
     };
 
