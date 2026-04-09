@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 
 // The hashed password from auth.js. 
 // It is now securely on the backend where users cannot inspect it!
-const adminHash = process.env.ADMIN_HASH || "$2b$10$xQ1hUX4auSlT1q4FQlgEreDlhtf9xOyTb5IeHQNbRLF50N1Yv0zyi";
+const adminHash = process.env.ADMIN_HASH || "$2b$10$1sp1CSmytryEtrpHgYNFbeoH.8/zDnemzZSsO/WKfzUDsXRMUG0t2";
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
