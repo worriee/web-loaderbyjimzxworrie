@@ -19,7 +19,6 @@ const Login = ({ onLogin }) => {
             const data = await response.json();
 
             if (data.success) {
-                sessionStorage.setItem("isAdmin", "true");
                 onLogin(true);
             } else {
                 setErrorMessage(data.error || "Invalid password.");
