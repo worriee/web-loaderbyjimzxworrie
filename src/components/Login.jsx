@@ -25,6 +25,7 @@ const Login = ({ onLogin }) => {
                 setErrorMessage(data.error || "Invalid password.");
             }
         } catch (error) {
+            console.error("Login fetch error:", error);
             setErrorMessage("Server error. Please try again later.");
         }
     };

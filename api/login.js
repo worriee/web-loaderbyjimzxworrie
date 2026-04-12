@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
 
-// The hashed password from auth.js. 
-// It is now securely on the backend where users cannot inspect it!
-const adminHash = process.env.ADMIN_HASH || "$2b$10$1sp1CSmytryEtrpHgYNFbeoH.8/zDnemzZSsO/WKfzUDsXRMUG0t2";
+// The password from environment variables.
+// It can be a bcrypt hash (starts with $2a$, $2b$, or $2y$) OR a plain-text password.
+const adminAuth = process.env.ADMIN_HASH || process.env.ADMIN_PASSWORD || "$2b$10$1sp1CSmytryEtrpHgYNFbeoH.8/zDnemzZSsO/WKfzUDsXRMUG0t2";
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -16,7 +16,16 @@ export default async function handler(req, res) {
     }
 
     try {
-        const isValid = await bcrypt.compare(password, adminHash);
+        let isValid = false;
+        
+        // Check if the environment variable is a bcrypt hash
+        if (adminAuth.startsWith('$2a$') || adminAuth.startsWith('$2b$') || adminAuth.startsWith('$2y$')) {
+            isValid = await bcrypt.compare(password, adminAuth);
+        } else {
+            // Fallback to direct string comparison if the user entered a plain-text password
+            // in their Vercel environment variables.
+            isValid = (password === adminAuth);
+        }
         
         if (isValid) {
             // Success
@@ -25,7 +34,7 @@ export default async function handler(req, res) {
             return res.status(401).json({ success: false, error: 'Invalid password' });
         }
     } catch (error) {
-        console.error('Bcrypt error:', error);
+        console.error('Login error:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
