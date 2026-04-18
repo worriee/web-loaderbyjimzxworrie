@@ -1,0 +1,29 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "JM Loader",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "JMxWorrie",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+    "src": "assets/android/launchericon-512-512.png",
+    "sizes": "512x512",
+    "type": "image/png",
+    "purpose": "maskable"
+    },
+
+    {
+      "src": "assets/android/launchericon-192-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ], 
+  "id": "JML",
+  "description": "A loader app by James owned by Worrie",
+  "lang": "en"
+}
