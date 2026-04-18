@@ -12,7 +12,11 @@ const TransactionsTable = ({ transactions, isAdmin, onStatusChange, onDelete }) 
     return (
         <div>
             <h2 className="text-center mb-4">Recent Transactions</h2>
+<<<<<<< HEAD
             <table className="w-full border-collapse">
+=======
+            <table className="w-full border-collapse table-auto">
+>>>>>>> 058a4ba (initial commit)
                 <thead>
                     <tr>
                         <th className="p-3 border border-gray-300 text-left bg-gray-100">Phone Number</th>

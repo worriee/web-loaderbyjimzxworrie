@@ -4,7 +4,11 @@ import { serialize } from 'cookie';
 
 // The password from environment variables.
 // It can be a bcrypt hash (starts with $2a$, $2b$, or $2y$) OR a plain-text password.
+<<<<<<< HEAD
 const adminAuth = process.env.ADMIN_HASH //|| process.env.ADMIN_PASSWORD || "$2b$10$1sp1CSmytryEtrpHgYNFbeoH.8/zDnemzZSsO/WKfzUDsXRMUG0t2";
+=======
+const adminAuth = process.env.ADMIN_HASH;
+>>>>>>> 058a4ba (initial commit)
 
 // A secret key used to sign the JWT tokens.
 const JWT_SECRET = process.env.JWT_SECRET;
