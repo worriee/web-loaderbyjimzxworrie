@@ -51,11 +51,7 @@ const AdminPanel = () => {
     };
 
     return (
-<<<<<<< HEAD
-        <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-md mx-auto">
-=======
         <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-md mx-auto overflow-x-auto">
->>>>>>> 058a4ba (initial commit)
             <TransactionsTable
                 transactions={transactions}
                 isAdmin={true}

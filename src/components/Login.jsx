@@ -51,11 +51,7 @@ const Login = ({ onLogin }) => {
                 </div>
 
                 <button 
-<<<<<<< HEAD
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all shadow-md active:transform active:scale-[0.98]" 
-=======
                     className="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-white-300 transition-all shadow-md active:transform active:scale-[0.98]" 
->>>>>>> 058a4ba (initial commit)
                     type="submit"
                 >
                     Login

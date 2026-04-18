@@ -13,22 +13,14 @@ const Popup = ({ isOpen, onClose, onAdminLoginClick, isAdmin, onAdminLogout }) =
                 {isAdmin ? (
                     <>
                         <span className="mb-5 text-base text-gray-500">Logged In as Admin</span>
-<<<<<<< HEAD
-                        <button onClick={onAdminLogout} className="bg-blue-500 text-white border-none py-3 px-6 rounded cursor-pointer text-lg transition-colors duration-200 hover:bg-blue-700">
-=======
                         <button onClick={onAdminLogout} className="bg-gray-500 text-white border-none py-3 px-6 rounded cursor-pointer text-lg transition-colors duration-200 hover:bg-gray-600">
->>>>>>> 058a4ba (initial commit)
                             Logout As Admin
                         </button>
                     </>
                 ) : (
                     <>
                         <span className="mb-5 text-base text-gray-500">Logged In as User</span>
-<<<<<<< HEAD
-                        <button onClick={() => { onAdminLoginClick(); onClose(); }} className="bg-blue-500 text-white border-none py-3 px-6 rounded cursor-pointer text-lg transition-colors duration-200 hover:bg-blue-700">
-=======
                         <button onClick={() => { onAdminLoginClick(); onClose(); }} className="bg-gray-500 text-white border-none py-3 px-6 rounded cursor-pointer text-lg transition-colors duration-200 hover:bg-gray-600">
->>>>>>> 058a4ba (initial commit)
                             Login as Admin
                         </button>
                     </>

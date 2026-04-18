@@ -110,11 +110,7 @@ const UserPanel = () => {
                         <label htmlFor="receipt" className="block mb-1 font-bold">Upload Proof of Payment:</label>
                         <input type="file" id="receipt" name="receipt" accept="image/*" onChange={(e) => setReceipt(e.target.files[0])} className="w-full" />
                     </div>
-<<<<<<< HEAD
-                    <button type="submit" className="w-full p-2.5 bg-blue-500 text-white border-none rounded cursor-pointer text-base hover:bg-blue-700">Add Transaction</button>
-=======
                     <button type="submit" className="w-full p-2.5 bg-gray-500 text-white border-none rounded cursor-pointer text-base hover:bg-gray-600">Add Transaction</button>
->>>>>>> 058a4ba (initial commit)
                 </form>
             </div>
             <TransactionsTable transactions={transactions} isAdmin={false} />
