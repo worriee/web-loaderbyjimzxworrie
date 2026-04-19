@@ -33,7 +33,7 @@
     {
       "src": "/screenshots/screenshot-desktop.png",
       "type": "image/png",
-      "sizes": "1280x720",
+      "sizes": "1920x1080",
       "form_factor": "wide"
     }
   ],
