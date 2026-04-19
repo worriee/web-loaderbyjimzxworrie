@@ -13,6 +13,8 @@ export default function handler(req, res) {
         maxAge: -1, // Expires immediately
         path: '/'
     }));
+    
+    res.setHeader("Clear-Site-Data", "\"cookies\", \"storage\"");
 
     return res.status(200).json({ success: true });
 }
