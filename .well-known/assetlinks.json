@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.worrie.webloader",
+        "sha256_cert_fingerprints": ["BA:32:7A:B3:99:32:08:EC:46:0F:AB:32:18:E0:34:0A:8B:6E:85:0A:72:35:7E:22:A1:12:11:0C:B5:27:2D:E9"]
+      }
+    }]
