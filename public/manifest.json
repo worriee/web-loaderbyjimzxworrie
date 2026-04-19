@@ -23,7 +23,7 @@
       "purpose": "any"
     },
     {
-      "src": "android/launchericon-144xs144.png",
+      "src": "android/launchericon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
