@@ -51,13 +51,15 @@ const AdminPanel = () => {
     };
 
     return (
-        <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-md mx-auto overflow-x-auto">
-            <TransactionsTable
-                transactions={transactions}
-                isAdmin={true}
-                onStatusChange={handleStatusChange}
-                onDelete={handleDelete}
-            />
+        <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-md mx-auto">
+            <div className="overflow-x-auto">
+                <TransactionsTable
+                    transactions={transactions}
+                    isAdmin={true}
+                    onStatusChange={handleStatusChange}
+                    onDelete={handleDelete}
+                />
+            </div>
         </div>
     );
 };

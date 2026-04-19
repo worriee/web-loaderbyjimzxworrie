@@ -61,7 +61,7 @@ const UserPanel = () => {
     };
 
     return (
-        <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-md mx-auto overflow-x-auto">
+        <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-md mx-auto">
             <div className="mb-5">
                 <form id="transaction-form" onSubmit={handleSubmit}>
                     <div className="mb-4">
@@ -107,13 +107,30 @@ const UserPanel = () => {
                         ></textarea>
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="receipt" className="block mb-1 font-bold">Upload Proof of Payment:</label>
-                        <input type="file" id="receipt" name="receipt" accept="image/*" onChange={(e) => setReceipt(e.target.files[0])} className="w-full" />
+                        <span className="block mb-2 font-bold">Upload Proof of Payment:</span>
+                        <div className="flex items-center">
+                            <label htmlFor="receipt" className="cursor-pointer bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors">
+                                Upload Files
+                            </label>
+                            <input
+                                id="receipt"
+                                type="file"
+                                name="receipt"
+                                accept="image/*"
+                                onChange={(e) => setReceipt(e.target.files[0])}
+                                className="hidden"
+                            />
+                            <span className="ml-4 text-gray-600 truncate max-w-xs">
+                                {receipt ? receipt.name : 'No file chosen'}
+                            </span>
+                        </div>
                     </div>
                     <button type="submit" className="w-full p-2.5 bg-gray-500 text-white border-none rounded cursor-pointer text-base hover:bg-gray-600">Add Transaction</button>
                 </form>
             </div>
-            <TransactionsTable transactions={transactions} isAdmin={false} />
+            <div className="overflow-x-auto">
+                <TransactionsTable transactions={transactions} isAdmin={false} />
+            </div>
         </div>
     );
 };
