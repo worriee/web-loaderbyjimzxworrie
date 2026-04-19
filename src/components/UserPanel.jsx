@@ -61,7 +61,7 @@ const UserPanel = () => {
     };
 
     return (
-        <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-lg mx-auto">
+        <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-md mx-auto overflow-x-auto">
             <div className="mb-5">
                 <form id="transaction-form" onSubmit={handleSubmit}>
                     <div className="mb-4">
