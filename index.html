@@ -7,7 +7,7 @@
     <link rel="manifest" href="public/manifest.json" />
     <meta name="description" content="A loader app by James owned by Worrie" />
     <meta name="theme-color" content="#ffffff" />
-    <link rel="apple-touch-icon" href="public/android/launchericon-192-192.png" />
+    <link rel="apple-touch-icon" href="/public/android/launchericon-192-192.png" />
     
     <title>James x Worriee</title>
   </head>
@@ -25,7 +25,7 @@
 
    if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('public/pwabuilder-sw.js');
+      navigator.serviceWorker.register('/public/pwabuilder-sw.js');
     });
   }
 </script>
