@@ -55,6 +55,15 @@ const AdminPanel = () => {
     }, [transactions]);
 
     const handleStatusChange = async (id, newStatus) => {
+        const previousTransactions = [...transactions];
+        
+        // Optimistic Update: Update UI immediately
+        setTransactions(prev => prev.map(t =>
+            t.id === id
+                ? { ...t, status: newStatus, completed_at: newStatus === 'Completed' ? new Date().toISOString() : null }
+                : t
+        ));
+
         const updateData = { status: newStatus };
         if (newStatus === 'Completed') {
             updateData.completed_at = new Date().toISOString();
@@ -70,13 +79,17 @@ const AdminPanel = () => {
         if (error) {
             console.error('Error updating transaction status:', error);
             alert(`Failed to update status: ${error.message}`);
-        } else {
-            fetchTransactions();
+            setTransactions(previousTransactions); // Revert on error
         }
     };
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this transaction?')) {
+            const previousTransactions = [...transactions];
+
+            // Optimistic Update: Remove from UI immediately
+            setTransactions(prev => prev.filter(t => t.id !== id));
+
             const { error } = await supabase
                 .from('transactions')
                 .delete()
@@ -84,9 +97,8 @@ const AdminPanel = () => {
 
             if (error) {
                 console.error('Error deleting transaction:', error);
-                alert('Failed to delete transaction');
-            } else {
-                fetchTransactions();
+                alert(`Failed to delete transaction: ${error.message}`);
+                setTransactions(previousTransactions); // Revert on error
             }
         }
     };
