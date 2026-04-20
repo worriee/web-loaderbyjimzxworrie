@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TransactionsTable from './TransactionsTable';
 import { supabase } from '../utils/supabaseClient';
+import NotificationPopup from './NotificationPopup';
 
 const UserPanel = () => {
     const [transactions, setTransactions] = useState([]);
@@ -10,6 +11,7 @@ const UserPanel = () => {
     const [notes, setNotes] = useState('');
     const [receipt, setReceipt] = useState(null);
     const [paymentDetails, setPaymentDetails] = useState('');
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
     const paymentInfo = {
         Gcash: 'Gcash Number: 09859722995 JM',
@@ -41,9 +43,6 @@ const UserPanel = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
     const processTransaction = async (receiptUrl) => {
         const newTransaction = {
             phone_number: phoneNumber,
@@ -59,23 +58,31 @@ const UserPanel = () => {
                 .insert([newTransaction])
                 .select();
 
-            if (error) {
-                console.error('Error inserting transaction:', error);
-                alert('Failed to add transaction. Please try again.');
-                return;
-            }
+        if (error) {
+            console.error('Error inserting transaction:', error);
+            alert('Failed to add transaction. Please try again.');
+            return;
+        }
 
-                setTransactions([ ...data, ...transactions].slice(0, 10));
-                setPhoneNumber('');
-            setNetwork('');
-            setModeOfPayment('');
-            setNotes('');
-            setReceipt(null);
-            document.getElementById('receipt').value = '';
-        };
+        setTransactions([ ...data, ...transactions].slice(0, 10));
+        setShowSuccessPopup(true);
+        setPhoneNumber('');
+        setNetwork('');
+        setModeOfPayment('');
+        setNotes('');
+        setReceipt(null);
+        document.getElementById('receipt').value = '';
+    };
 
-        if (receipt) {
-            try {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!receipt) {
+            alert('Please upload a proof of payment.');
+            return;
+        }
+
+        try {
                 const formData = new FormData();
                 formData.append('file', receipt);
                 formData.append('fileName', receipt.name);
@@ -102,12 +109,10 @@ const UserPanel = () => {
                 console.error('Error uploading receipt via Edge Function:', error);
                 alert(error.message || 'Failed to upload receipt. Please try again.');
             }
-        } else {
-            await processTransaction(null);
-        }
     };
 
     return (
+        <>
         <div className="w-full max-w-3xl bg-white p-5 rounded-lg shadow-md mx-auto">
             <div className="mb-5">
                 <form id="transaction-form" onSubmit={handleSubmit}>
@@ -125,7 +130,7 @@ const UserPanel = () => {
                     </div>
                     <div className="mb-4">
                         <label htmlFor="network" className="block mb-1 font-bold">Network</label>
-                        <select id="network" value={network} onChange={(e) => setNetwork(e.target.value)} className="w-full p-2.5 border border-gray-300 rounded">
+                        <select id="network" value={network} onChange={(e) => setNetwork(e.target.value)} required className="w-full p-2.5 border border-gray-300 rounded">
                             <option value="" disabled>Select a network</option>
                             <option value="DITO">DITO</option>
                             <option value="SMART">SMART</option>
@@ -136,7 +141,7 @@ const UserPanel = () => {
                     </div>
                     <div className="mb-4">
                         <label htmlFor="mode-of-payment" className="block mb-1 font-bold">Mode of Payment</label>
-                        <select id="mode-of-payment" value={modeOfPayment} onChange={handlePaymentChange} className="w-full p-2.5 border border-gray-300 rounded">
+                        <select id="mode-of-payment" value={modeOfPayment} onChange={handlePaymentChange} required className="w-full p-2.5 border border-gray-300 rounded">
                             <option value="" disabled>Select a payment method</option>
                             <option value="Gcash">Gcash</option>
                             <option value="Maya">Maya</option>
@@ -150,6 +155,7 @@ const UserPanel = () => {
                             placeholder="Type the amount of gb (eg. 1GB, 5GB, 10GB, etc)"
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
+                            required
                             className="w-full p-2.5 border border-gray-300 rounded"
                         ></textarea>
                     </div>
@@ -179,6 +185,12 @@ const UserPanel = () => {
                 <TransactionsTable transactions={transactions} isAdmin={false} />
             </div>
         </div>
+        <NotificationPopup
+            isOpen={showSuccessPopup}
+            onClose={() => setShowSuccessPopup(false)}
+            message="Transaction Added"
+        />
+        </>
     );
 };
 

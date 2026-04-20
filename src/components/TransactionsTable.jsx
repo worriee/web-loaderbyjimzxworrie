@@ -53,7 +53,7 @@ const TransactionsTable = ({ transactions, isAdmin, onStatusChange, onDelete }) 
                             </td>
                             {isAdmin && (
                                 <td className="p-3 border border-gray-300 text-left">
-                                     {transaction.status === 'Completed' || 'Cancelled' && (
+                                     {(transaction.status === 'Completed' || transaction.status === 'Cancelled') && (
                                          <button onClick={() => onDelete(transaction.id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</button>
                                      )}
                                 </td>

@@ -69,7 +69,7 @@ const AdminPanel = () => {
 
         if (error) {
             console.error('Error updating transaction status:', error);
-            alert('Failed to update status');
+            alert(`Failed to update status: ${error.message}`);
         } else {
             fetchTransactions();
         }
