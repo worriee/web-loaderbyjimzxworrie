@@ -1,52 +1,93 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import TransactionsTable from './TransactionsTable';
+import { supabase } from '../utils/supabaseClient';
 
 const AdminPanel = () => {
-    const [transactions, setTransactions] = useState(() => JSON.parse(localStorage.getItem('transactions')) || []);
+    const [transactions, setTransactions] = useState([]);
 
-    const saveTransactions = useCallback((transactions) => {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
-        setTransactions(transactions);
+    const fetchTransactions = async () => {
+        const { data, error } = await supabase
+            .from('transactions')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching transactions:', error);
+        } else {
+            setTransactions(data);
+        }
+    };
+
+    useEffect(() => {
+        fetchTransactions();
     }, []);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async () => {
             const twelveHours = 12 * 60 * 60 * 1000;
-            const now = new Date().getTime();
+            const now = Date.now();
 
             const transactionsToDelete = transactions.filter(transaction => {
-                if (transaction.status === 'Completed' && transaction.completedAt) {
-                    return now - transaction.completedAt > twelveHours;
+                if (transaction.status === 'Completed' && transaction.completed_at) {
+                    const completedAt = new Date(transaction.completed_at).getTime();
+                    return now - completedAt > twelveHours;
                 }
                 return false;
             });
 
             if (transactionsToDelete.length > 0) {
                 if (window.confirm(`There are ${transactionsToDelete.length} completed transactions older than 12 hours. Do you want to delete them?`)) {
-                    const updatedTransactions = transactions.filter(t => !transactionsToDelete.includes(t));
-                    saveTransactions(updatedTransactions);
+                    const idsToDelete = transactionsToDelete.map(t => t.id);
+                    const { error } = await supabase
+                        .from('transactions')
+                        .delete()
+                        .in('id', idsToDelete);
+
+                    if (error) {
+                        console.error('Error deleting old transactions:', error);
+                    } else {
+                        fetchTransactions();
+                    }
                 }
             }
-        }, 0);
+        }, 1000);
         return () => clearTimeout(timer);
-    }, [saveTransactions, transactions]);
+    }, [transactions]);
 
-    const handleStatusChange = (index, newStatus) => {
-        const updatedTransactions = [...transactions];
-        updatedTransactions[index].status = newStatus;
+    const handleStatusChange = async (id, newStatus) => {
+        const updateData = { status: newStatus };
         if (newStatus === 'Completed') {
-            updatedTransactions[index].completedAt = new Date().getTime();
+            updateData.completed_at = new Date().toISOString();
         } else {
-            delete updatedTransactions[index].completedAt;
+            updateData.completed_at = null;
         }
-        saveTransactions(updatedTransactions);
+
+        const { error } = await supabase
+            .from('transactions')
+            .update(updateData)
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error updating transaction status:', error);
+            alert('Failed to update status');
+        } else {
+            fetchTransactions();
+        }
     };
 
-    const handleDelete = (index) => {
+    const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this transaction?')) {
-            const updatedTransactions = [...transactions];
-            updatedTransactions.splice(index, 1);
-            saveTransactions(updatedTransactions);
+            const { error } = await supabase
+                .from('transactions')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                console.error('Error deleting transaction:', error);
+                alert('Failed to delete transaction');
+            } else {
+                fetchTransactions();
+            }
         }
     };
 

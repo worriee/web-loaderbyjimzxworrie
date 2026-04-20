@@ -10,8 +10,8 @@ const TransactionsTable = ({ transactions, isAdmin, onStatusChange, onDelete }) 
     };
 
     return (
-        <div>
-            <h2 className="text-center mb-4">Recent Transactions</h2>
+        <>
+            <h2 className="text-center mb-4 sticky left-0 right-0">Recent Transactions</h2>
             <table className="w-full border-collapse table-auto">
                 <thead>
                     <tr>
@@ -25,11 +25,11 @@ const TransactionsTable = ({ transactions, isAdmin, onStatusChange, onDelete }) 
                     </tr>
                 </thead>
                 <tbody>
-                    {transactions.map((transaction, index) => (
-                        <tr key={index} className="even:bg-gray-50">
-                            <td className="p-3 border border-gray-300 text-left">{isAdmin ? transaction.phoneNumber : maskPhoneNumber(transaction.phoneNumber)}</td>
+                    {transactions.map((transaction) => (
+                        <tr key={transaction.id} className="even:bg-gray-50">
+                            <td className="p-3 border border-gray-300 text-left">{isAdmin ? transaction.phone_number : maskPhoneNumber(transaction.phone_number)}</td>
                             <td className="p-3 border border-gray-300 text-left">{transaction.network}</td>
-                            <td className="p-3 border border-gray-300 text-left">{transaction.modeOfPayment}</td>
+                            <td className="p-3 border border-gray-300 text-left">{transaction.mode_of_payment}</td>
                             <td className="p-3 border border-gray-300 text-left">{transaction.notes}</td>
                             {isAdmin && (
                                 <td className="p-3 border border-gray-300 text-left">
@@ -41,7 +41,7 @@ const TransactionsTable = ({ transactions, isAdmin, onStatusChange, onDelete }) 
                                     <select
                                         className="w-full p-1 rounded"
                                         value={transaction.status}
-                                        onChange={(e) => onStatusChange(index, e.target.value)}
+                                         onChange={(e) => onStatusChange(transaction.id, e.target.value)}
                                     >
                                         <option value="Pending">Pending</option>
                                         <option value="Completed">Completed</option>
@@ -53,16 +53,16 @@ const TransactionsTable = ({ transactions, isAdmin, onStatusChange, onDelete }) 
                             </td>
                             {isAdmin && (
                                 <td className="p-3 border border-gray-300 text-left">
-                                    {transaction.status === 'Completed' && (
-                                        <button onClick={() => onDelete(index)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</button>
-                                    )}
+                                     {transaction.status === 'Completed' && (
+                                         <button onClick={() => onDelete(transaction.id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</button>
+                                     )}
                                 </td>
                             )}
                         </tr>
                     ))}
                 </tbody>
             </table>
-        </div>
+        </>
     );
 };
 
