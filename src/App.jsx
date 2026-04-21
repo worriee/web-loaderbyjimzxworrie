@@ -4,6 +4,7 @@ import UserPanel from './components/UserPanel';
 import AdminPanel from './components/AdminPanel';
 import Navbar from './components/Navbar';
 import Popup from './components/Popup';
+import { supabase } from './utils/supabaseClient';
 import './index.css';
 
 function App() {
@@ -17,10 +18,22 @@ function App() {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await fetch('/api/verify');
-                if (response.ok) {
-                    const data = await response.json();
-                    setIsAdmin(data.isAuthenticated);
+                // 1. Check if there is an active Supabase session
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (session?.user) {
+                    // 2. Check if the logged-in user is an admin in the profiles table
+                    const { data: profile, error } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    if (profile && profile.role === 'admin') {
+                        setIsAdmin(true);
+                    } else {
+                        setIsAdmin(false);
+                    }
                 } else {
                     setIsAdmin(false);
                 }
@@ -41,9 +54,9 @@ function App() {
     };
 
     const handleLogout = async () => {
-        // Call the backend to destroy the cookie token
         try {
-            await fetch('/api/logout', { method: 'POST' });
+            // Use Supabase Auth to sign out
+            await supabase.auth.signOut();
         } catch (error) {
             console.error("Logout failed", error);
         }
