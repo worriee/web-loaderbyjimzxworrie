@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const Login = ({ onLogin }) => {
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -9,19 +10,20 @@ const Login = ({ onLogin }) => {
         setErrorMessage("");
 
         try {
+            // Using the provided email and password to authenticate via the API
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ password })
+                body: JSON.stringify({ email, password })
             });
             const data = await response.json();
 
             if (data.success) {
                 onLogin(true);
             } else {
-                setErrorMessage(data.error || "Invalid password.");
+                setErrorMessage(data.error || "Invalid email or password.");
             }
         } catch (error) {
             console.error("Login fetch error:", error);
@@ -34,6 +36,21 @@ const Login = ({ onLogin }) => {
             <form id="login-form" onSubmit={handleSubmit}>
                 <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">Admin Login</h2>
                 
+
+                <div className="mb-6">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                        Email Address
+                    </label>
+                    <input
+                        className="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
 
                 <div className="mb-8">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
