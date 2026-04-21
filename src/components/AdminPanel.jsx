@@ -87,22 +87,16 @@ const AdminPanel = () => {
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this transaction?')) {
-            const previousTransactions = [...transactions];
-
-            // Optimistic Update: Remove from UI immediately
-            setTransactions(prev => prev.filter(t => t.id !== id));
-
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('transactions')
                 .delete()
-                .eq('id', id)
-                .select();
+                .eq('id', id);
 
-            if (error || !data || data.length === 0) {
-                const msg = error ? error.message : 'Permission denied or transaction not found.';
+            if (error) {
                 console.error('Error deleting transaction:', error);
-                alert(`Failed to delete transaction: ${msg}`);
-                setTransactions(previousTransactions); // Revert on error
+                alert(`Failed to delete transaction: ${error.message}`);
+            } else {
+                await fetchTransactions();
             }
         }
     };
