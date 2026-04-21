@@ -12,20 +12,24 @@ const Login = ({ onLogin }) => {
         setErrorMessage("");
 
         try {
-            // Using the provided email and password to authenticate via the API
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password })
+            // Use Supabase Auth directly to create a real session
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
             });
-            const data = await response.json();
 
-            if (data.success) {
+            if (error) {
+                setErrorMessage(error.message);
+                return;
+            }
+
+            // Explicitly verify the session is active
+            const { data: sessionData } = await supabase.auth.getSession();
+            
+            if (sessionData.session) {
                 onLogin(true);
             } else {
-                setErrorMessage(data.error || "Invalid email or password.");
+                setErrorMessage("Session could not be established. Please try again.");
             }
         } catch (error) {
             console.error("Login fetch error:", error);
