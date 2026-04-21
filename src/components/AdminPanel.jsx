@@ -71,14 +71,16 @@ const AdminPanel = () => {
             updateData.completed_at = null;
         }
 
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('transactions')
             .update(updateData)
-            .eq('id', id);
+            .eq('id', id)
+            .select();
 
-        if (error) {
+        if (error || !data || data.length === 0) {
+            const msg = error ? error.message : 'Permission denied or transaction not found.';
             console.error('Error updating transaction status:', error);
-            alert(`Failed to update status: ${error.message}`);
+            alert(`Failed to update status: ${msg}`);
             setTransactions(previousTransactions); // Revert on error
         }
     };
@@ -90,14 +92,16 @@ const AdminPanel = () => {
             // Optimistic Update: Remove from UI immediately
             setTransactions(prev => prev.filter(t => t.id !== id));
 
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from('transactions')
                 .delete()
-                .eq('id', id);
+                .eq('id', id)
+                .select();
 
-            if (error) {
+            if (error || !data || data.length === 0) {
+                const msg = error ? error.message : 'Permission denied or transaction not found.';
                 console.error('Error deleting transaction:', error);
-                alert(`Failed to delete transaction: ${error.message}`);
+                alert(`Failed to delete transaction: ${msg}`);
                 setTransactions(previousTransactions); // Revert on error
             }
         }
