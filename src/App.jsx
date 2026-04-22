@@ -18,22 +18,12 @@ function App() {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                // 1. Check if there is an active Supabase session
-                const { data: { session } } = await supabase.auth.getSession();
+                // Verify the admin session using the Vercel API
+                const response = await fetch('/api/verify');
+                const data = await response.json();
                 
-                if (session?.user) {
-                    // 2. Check if the logged-in user is an admin in the profiles table
-                    const { data: profile, error } = await supabase
-                        .from('profiles')
-                        .select('role')
-                        .eq('id', session.user.id)
-                        .single();
-
-                    if (profile && profile.role === 'admin') {
-                        setIsAdmin(true);
-                    } else {
-                        setIsAdmin(false);
-                    }
+                if (data.isAuthenticated) {
+                    setIsAdmin(true);
                 } else {
                     setIsAdmin(false);
                 }

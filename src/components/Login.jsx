@@ -12,39 +12,30 @@ const Login = ({ onLogin }) => {
         setErrorMessage("");
 
         try {
-            // Use Supabase Auth directly to create a real session
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
+            // Call the Vercel Serverless Function for Admin Login
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: password }),
             });
 
-            if (error) {
-                setErrorMessage(error.message);
-                return;
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Login failed');
             }
 
-            // Explicitly verify the session is active
-            const { data: sessionData } = await supabase.auth.getSession();
-            
-            if (sessionData.session) {
-                // Fetch the user's role from the profiles table
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', sessionData.session.user.id)
-                    .single();
-
-                if (profileError || !profile) {
-                    console.error("Error fetching user role:", profileError);
-                    setErrorMessage("User profile not found. Please contact support.");
-                    return;
-                }
-
-                // Pass the actual admin status based on the database role
-                onLogin(profile.role === 'admin');
+            if (result.success) {
+                // The API has set a secure HttpOnly cookie.
+                // We tell the app the user is now an admin.
+                onLogin(true);
             } else {
-                setErrorMessage("Session could not be established. Please try again.");
+                setErrorMessage("Invalid admin credentials.");
             }
+        } catch (error) {
+            console.error("Login fetch error:", error);
+            setErrorMessage(error.message || "Server error. Please try again later.");
+        }
         } catch (error) {
             console.error("Login fetch error:", error);
             setErrorMessage("Server error. Please try again later.");
