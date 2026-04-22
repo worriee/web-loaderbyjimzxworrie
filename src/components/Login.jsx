@@ -27,7 +27,21 @@ const Login = ({ onLogin }) => {
             const { data: sessionData } = await supabase.auth.getSession();
             
             if (sessionData.session) {
-                onLogin(true);
+                // Fetch the user's role from the profiles table
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', sessionData.session.user.id)
+                    .single();
+
+                if (profileError || !profile) {
+                    console.error("Error fetching user role:", profileError);
+                    setErrorMessage("User profile not found. Please contact support.");
+                    return;
+                }
+
+                // Pass the actual admin status based on the database role
+                onLogin(profile.role === 'admin');
             } else {
                 setErrorMessage("Session could not be established. Please try again.");
             }

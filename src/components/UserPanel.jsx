@@ -3,7 +3,6 @@ import TransactionsTable from './TransactionsTable';
 import { supabase } from '../utils/supabaseClient';
 
 const UserPanel = () => {
-    const [transactions, setTransactions] = useState([]);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [network, setNetwork] = useState('');
     const [modeOfPayment, setModeOfPayment] = useState('');
@@ -31,20 +30,6 @@ const UserPanel = () => {
         }
     };
 
-    useEffect(() => {
-        fetchTransactions();
-    }, []);
-
-    const fetchTransactions = async () => {
-        const { data, error } = await supabase
-            .rpc('get_recent_transactions');
-
-        if (error) {
-            console.error('Error fetching transactions:', error);
-        } else {
-            setTransactions(data);
-        }
-    };
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -55,15 +40,12 @@ const UserPanel = () => {
 
         try {
             const { data, error } = await supabase
-                .from('transactions')
-                .select('status')
-                .eq('id', searchId)
-                .single();
+                .rpc('search_transaction', { t_id: searchId });
 
             if (error) throw error;
 
-            if (data) {
-                setSearchResult(data);
+            if (data && data.length > 0) {
+                setSearchResult(data[0]);
             } else {
                 alert('Transaction not found. Please check your ID.');
             }
@@ -96,7 +78,6 @@ const UserPanel = () => {
             return;
         }
 
-        setTransactions([ ...data, ...transactions].slice(0, 10));
         setLastTransactionId(data[0]?.id || 'N/A');
         setSubmitted(true);
         setPhoneNumber('');
