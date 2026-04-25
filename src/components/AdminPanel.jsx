@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import TransactionsTable from './TransactionsTable';
-import { supabase } from '../utils/supabaseClient';
 
 const AdminPanel = () => {
     const [transactions, setTransactions] = useState([]);
 
     const fetchTransactions = async () => {
-        const { data, error } = await supabase
-            .from('transactions')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('Error fetching transactions:', error);
-        } else {
+        try {
+            const response = await fetch('/api/admin/transactions');
+            if (!response.ok) throw new Error('Failed to fetch transactions');
+            const data = await response.json();
             setTransactions(data);
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
         }
     };
 
@@ -71,32 +68,41 @@ const AdminPanel = () => {
             updateData.completed_at = null;
         }
 
-        const { data, error } = await supabase
-            .from('transactions')
-            .update(updateData)
-            .eq('id', id)
-            .select();
+        try {
+            const response = await fetch('/api/admin/update-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, status: newStatus }),
+            });
 
-        if (error || !data || data.length === 0) {
-            const msg = error ? error.message : 'Permission denied or transaction not found.';
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to update status');
+            }
+        } catch (error) {
             console.error('Error updating transaction status:', error);
-            alert(`Failed to update status: ${msg}`);
+            alert(`Failed to update status: ${error.message}`);
             setTransactions(previousTransactions); // Revert on error
         }
     };
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this transaction?')) {
-            const { error } = await supabase
-                .from('transactions')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
+            try {
+                const response = await fetch('/api/admin/delete-transaction', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id }),
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to delete transaction');
+                }
+                await fetchTransactions();
+            } catch (error) {
                 console.error('Error deleting transaction:', error);
                 alert(`Failed to delete transaction: ${error.message}`);
-            } else {
-                await fetchTransactions();
             }
         }
     };
