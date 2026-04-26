@@ -13,51 +13,46 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase Client
+    const formData = await req.formData();
+    const file = formData.get('file') as File;
+    const fileName = formData.get('fileName') as string;
+
+    if (!file) {
+      return new Response(JSON.stringify({ error: 'No file uploaded' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
-    // Parse the request body
-    const formData = await req.formData()
-    const file = formData.get('file') as File
-
-    if (!file) {
-      throw new Error('Missing required field: file')
-    }
+    );
 
     // Upload file to 'receipts' bucket
-    // Using a timestamp and random string since we are not requiring a user session
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}-${file.name}`
-    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+    const { data, error: uploadError } = await supabaseClient.storage
       .from('receipts')
-      .upload(fileName, file)
+      .upload(`receipts/${Date.now()}_${fileName}`, file, {
+        contentType: file.type,
+        upsert: true
+      });
 
-    if (uploadError) throw uploadError
+    if (uploadError) throw uploadError;
 
-    const filePath = uploadData.path
-    
-    // Get the public URL for the uploaded file
+    // Get the public URL
     const { data: { publicUrl } } = supabaseClient.storage
       .from('receipts')
-      .getPublicUrl(filePath)
+      .getPublicUrl(data.path);
 
-    return new Response(
-      JSON.stringify({ message: 'Upload successful', url: publicUrl, path: filePath }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 200 
-      }
-    )
+    return new Response(JSON.stringify({ url: publicUrl }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 400 
-      }
-    )
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 })
