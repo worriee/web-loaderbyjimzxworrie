@@ -14,28 +14,8 @@ function App() {
     const [showUserPopup, setShowUserPopup] = useState(false);
     const [showAdminPopup, setShowAdminPopup] = useState(false);
 
-    // Verify authentication status on load by checking if the browser has a valid token
     useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                // Verify the admin session using the Vercel API
-                const response = await fetch('/api/verify');
-                const data = await response.json();
-                
-                if (data.isAuthenticated) {
-                    setIsAdmin(true);
-                } else {
-                    setIsAdmin(false);
-                }
-            } catch (error) {
-                console.error("Auth verification failed", error);
-                setIsAdmin(false);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        checkAuth();
+        setIsLoading(false);
     }, []);
 
     const handleLogin = (status) => {
