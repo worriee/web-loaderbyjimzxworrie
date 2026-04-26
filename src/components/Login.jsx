@@ -36,10 +36,6 @@ const Login = ({ onLogin }) => {
             console.error("Login fetch error:", error);
             setErrorMessage(error.message || "Server error. Please try again later.");
         }
-        } catch (error) {
-            console.error("Login fetch error:", error);
-            setErrorMessage("Server error. Please try again later.");
-        }
     };
 
     return (
