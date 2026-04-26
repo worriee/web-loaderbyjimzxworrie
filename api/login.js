@@ -14,45 +14,56 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { password } = req.body;
+    const { email, password } = req.body;
 
-    if (!password) {
-        return res.status(400).json({ error: 'Password is required' });
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
     }
 
     try {
-        let isValid = false;
-        
-        // Check if the environment variable is a bcrypt hash
+        // 1. Verify Password first (Fastest check)
+        let isPasswordValid = false;
         if (adminAuth.startsWith('$2a$') || adminAuth.startsWith('$2b$') || adminAuth.startsWith('$2y$')) {
-            isValid = await bcrypt.compare(password, adminAuth);
+            isPasswordValid = await bcrypt.compare(password, adminAuth);
         } else {
-            // Fallback to direct string comparison if the user entered a plain-text password
-            // in their Vercel environment variables.
-            isValid = (password === adminAuth);
+            isPasswordValid = (password === adminAuth);
         }
-        
-        if (isValid) {
-            // Create the magical wristband (JWT token)
-            const token = jwt.sign({ role: 'admin' }, JWT_SECRET, {
-                expiresIn: '24h' // Wristband disappears in 24 hours
-            });
 
-            // Put the wristband on the user securely using an HttpOnly Cookie
-            // This ensures JavaScript cannot read it, preventing many attacks.
-            res.setHeader('Set-Cookie', serialize('auth_token', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 60 * 60 * 24, // 24 hours
-                path: '/'
-            }));
-
-            // Success
-            return res.status(200).json({ success: true });
-        } else {
-            return res.status(401).json({ success: false, error: 'Invalid password' });
+        if (!isPasswordValid) {
+            return res.status(401).json({ success: false, error: 'Invalid credentials' });
         }
+
+        // 2. Verify Email and Admin Role via Supabase Admin API
+        const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+        if (listError) throw listError;
+
+        const adminUser = users.find(user => user.email === email);
+
+        if (!adminUser) {
+            return res.status(401).json({ success: false, error: 'Invalid credentials' });
+        }
+
+        // Check if the user has the 'admin' role in app_metadata
+        const isAdmin = adminUser.app_metadata?.role === 'admin';
+
+        if (!isAdmin) {
+            return res.status(401).json({ success: false, error: 'Unauthorized: Admin access required' });
+        }
+
+        // 3. Issue JWT if both password and admin-email are verified
+        const token = jwt.sign({ role: 'admin', email: email }, JWT_SECRET, {
+            expiresIn: '24h'
+        });
+
+        res.setHeader('Set-Cookie', serialize('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 24,
+            path: '/'
+        }));
+
+        return res.status(200).json({ success: true });
     } catch (error) {
         console.error('Login error:', error);
         return res.status(500).json({ error: 'Internal server error' });
