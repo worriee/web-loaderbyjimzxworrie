@@ -36,7 +36,7 @@ const Login = ({ onLogin }) => {
             console.error("Login fetch error:", error);
             setErrorMessage(error.message || "Server error. Please try again later.");
         }
-    };
+    }; //fixed duplicate try catch
 
     return (
         <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-md mx-auto">
@@ -46,7 +46,7 @@ const Login = ({ onLogin }) => {
 
                 <div className="mb-6">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                        Email Address
+                        Email Address:
                     </label>
                     <input
                         className="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -61,7 +61,7 @@ const Login = ({ onLogin }) => {
 
                 <div className="mb-8">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                        Password
+                        Password:
                     </label>
                     <input
                         className="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
