@@ -3,11 +3,6 @@ import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseAdmin = createClient(
-    process.env.VITE_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
 // The password from environment variables.
 // It can be a bcrypt hash (starts with $2a$, $2b$, or $2y$) OR a plain-text password.
 const adminAuth = process.env.ADMIN_HASH;

@@ -1,10 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseAdmin = createClient(
-    process.env.VITE_SUPABASE_URL, 
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
 export default async function handler(req, res) {
     // Security check: Only allow requests with the correct CRON_SECRET
     const authHeader = req.headers['authorization'];
