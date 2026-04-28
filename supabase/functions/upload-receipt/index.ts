@@ -16,35 +16,59 @@ serve(async (req) => {
     const formData = await req.formData();
     const file = formData.get('file') as File;
     const fileName = formData.get('fileName') as string;
+    const phoneNumber = formData.get('phoneNumber') as string;
+    const network = formData.get('network') as string;
+    const modeOfPayment = formData.get('modeOfPayment') as string;
+    const notes = formData.get('notes') as string;
 
-    if (!file) {
-      return new Response(JSON.stringify({ error: 'No file uploaded' }), {
+    if (!file || !phoneNumber || !network || !modeOfPayment || !notes) {
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const supabaseClient = createClient(
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Upload file to 'receipts' bucket
-    const { data, error: uploadError } = await supabaseClient.storage
+    // 1. Upload file to 'receipts' bucket
+    const filePath = `receipts/${Date.now()}_${fileName}`;
+    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
       .from('receipts')
-      .upload(`receipts/${Date.now()}_${fileName}`, file, {
+      .upload(filePath, file, {
         contentType: file.type,
         upsert: true
       });
 
     if (uploadError) throw uploadError;
 
-    // Get the public URL
-    const { data: { publicUrl } } = supabaseClient.storage
+    // 2. Get the public URL
+    const { data: { publicUrl } } = supabaseAdmin.storage
       .from('receipts')
-      .getPublicUrl(data.path);
+      .getPublicUrl(filePath);
 
-    return new Response(JSON.stringify({ url: publicUrl }), {
+    // 3. Insert transaction into database (Bypasses RLS)
+    const { data: transactionData, error: insertError } = await supabaseAdmin
+      .from('transactions')
+      .insert([{
+        phone_number: phoneNumber,
+        network: network,
+        mode_of_payment: modeOfPayment,
+        notes: notes,
+        receipt: publicUrl,
+        status: 'Pending'
+      }])
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+
+    return new Response(JSON.stringify({ 
+      url: publicUrl, 
+      transactionId: transactionData.id 
+    }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

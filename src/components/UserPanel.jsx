@@ -57,36 +57,6 @@ const UserPanel = () => {
         }
     };
 
-    const processTransaction = async (receiptUrl) => {
-        const newTransaction = {
-            phone_number: phoneNumber,
-            network,
-            mode_of_payment: modeOfPayment,
-            notes,
-            receipt: receiptUrl,
-            status: 'Pending'
-        };
-
-        const { data, error } = await supabase
-            .from('transactions')
-                .insert([newTransaction])
-                .select();
-
-        if (error) {
-            console.error('Error inserting transaction:', error);
-            alert('Failed to add transaction. Please try again.');
-            return;
-        }
-
-        setLastTransactionId(data[0]?.id || 'N/A');
-        setSubmitted(true);
-        setPhoneNumber('');
-        setNetwork('');
-        setModeOfPayment('');
-        setNotes('');
-        setReceipt(null);
-        document.getElementById('receipt').value = '';
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -97,32 +67,42 @@ const UserPanel = () => {
         }
 
         try {
-                const formData = new FormData();
-                formData.append('file', receipt);
-                formData.append('fileName', receipt.name);
-                formData.append('transactionId', Math.random().toString(36).substring(2, 15));
+            const formData = new FormData();
+            formData.append('file', receipt);
+            formData.append('fileName', receipt.name);
+            formData.append('phoneNumber', phoneNumber);
+            formData.append('network', network);
+            formData.append('modeOfPayment', modeOfPayment);
+            formData.append('notes', notes);
 
-                const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-receipt`, {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-                    },
-                    body: formData,
-                });
+            const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload-receipt`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                },
+                body: formData,
+            });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Edge Function error: ${response.status} ${response.statusText} - ${errorText}`);
-                }
-
-                const data = await response.json();
-                if (!data || !data.url) throw new Error('No upload URL returned');
-
-                await processTransaction(data.url);
-            } catch (error) {
-                console.error('Error uploading receipt via Edge Function:', error);
-                alert(error.message || 'Failed to upload receipt. Please try again.');
+            if (!// response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Edge Function error: ${response.status} ${response.statusText} - ${errorText}`);
             }
+
+            const data = await response.json();
+            if (!data || !data.transactionId) throw new Error('No transaction ID returned');
+
+            setLastTransactionId(data.transactionId);
+            setSubmitted(true);
+            setPhoneNumber('');
+            setNetwork('');
+            setModeOfPayment('');
+            setNotes('');
+            setReceipt(null);
+            document.getElementById('receipt').value = '';
+        } catch (error) {
+            console.error('Error adding transaction:', error);
+            alert(error.message || 'Failed to add transaction. Please try again.');
+        }
     };
 
     return (
