@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { verifyAdmin } from './auth';
+import { verifyAdmin } from './auth.js';
 
 console.log('Checking Env Vars:', {
     urlExists: !!process.env.VITE_SUPABASE_URL || !!process.env.SUPABASE_URL,

@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { verifyAdmin } from './auth';
+import { verifyAdmin } from './auth.js';
 
 const supabaseAdmin = createClient(
     process.env.VITE_SUPABASE_URL, 
