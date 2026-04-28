@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { parse } from 'cookie';
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
 export default function handler(req, res) {
     if (req.method !== 'GET') {
         return res.status(405).json({ error: 'Method not allowed' });

@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { parse } from 'cookie';
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
 export function verifyAdmin(req) {
     const cookies = req.headers.cookie;
     if (!cookies) return { authenticated: false };
