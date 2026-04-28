@@ -1,13 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { verifyAdmin } from './auth.js';
 
-console.log('Checking Env Vars:', {
-    urlExists: !!process.env.VITE_SUPABASE_URL || !!process.env.SUPABASE_URL,
-    keyExists: !!process.env.SUPABASE_SERVICE_ROLE_KEY
-});
-
 const supabaseAdmin = createClient(
-    process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL,
+    process.env.VITE_SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
