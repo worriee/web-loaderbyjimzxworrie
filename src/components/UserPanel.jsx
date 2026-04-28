@@ -83,7 +83,7 @@ const UserPanel = () => {
                 body: formData,
             });
 
-            if (!// response.ok) {
+            if (!//response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Edge Function error: ${response.status} ${response.statusText} - ${errorText}`);
             }
