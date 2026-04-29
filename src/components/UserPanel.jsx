@@ -173,7 +173,18 @@ const UserPanel = () => {
                                 </span>
                             </div>
                         </div>
-                        <button type="submit" className="w-full p-2.5 bg-gray-500 text-white border-none rounded cursor-pointer text-base hover:bg-gray-600">Add Transaction</button>
+                        <button
+                           type="submit"
+                           disabled={isSearching}
+                           className="w-full p-2.5 bg-gray-500 text-white border-none rounded cursor-pointer text-base hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                           {isSearching ? (
+                               <>
+                                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                   Processing...
+                               </>
+                           ) : 'Add Transaction'}
+                        </button>
                     </form>
                 </div>
             ) : (
@@ -199,7 +210,7 @@ const UserPanel = () => {
             )}
             <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <h3 className="text-lg font-bold text-gray-800 mb-3">Check Transaction Status</h3>
-                <form onSubmit={handleSearch} className="flex gap-2">
+                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">
                     <input
                         type="text"
                         placeholder="Enter Transaction ID"
@@ -211,7 +222,7 @@ const UserPanel = () => {
                     <button
                         type="submit"
                         disabled={isSearching}
-                        className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors disabled:bg-gray-300"
+                        className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors disabled:bg-gray-300 w-full sm:w-auto"
                     >
                         {isSearching ? 'Searching...' : 'Search'}
                     </button>
