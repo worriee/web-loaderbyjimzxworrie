@@ -17,6 +17,26 @@ const AdminPanel = () => {
 
     useEffect(() => {
         fetchTransactions();
+
+        // Set up Realtime subscription to automatically refresh when data changes
+        const channel = supabase
+            .channel('transactions-realtime')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'transactions',
+                },
+                () => {
+                    fetchTransactions();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     useEffect(() => {
