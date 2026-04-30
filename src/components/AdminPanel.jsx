@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TransactionsTable from './TransactionsTable';
+import { supabase } from '../utils/supabaseClient';
 
 const AdminPanel = () => {
     const [transactions, setTransactions] = useState([]);
