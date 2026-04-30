@@ -14,6 +14,7 @@ const UserPanel = () => {
     const [searchId, setSearchId] = useState('');
     const [searchResult, setSearchResult] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const paymentInfo = {
         Gcash: 'Gcash Number: 09859722995 JM',
@@ -67,7 +68,6 @@ const UserPanel = () => {
         }
 
         setIsSubmitting(true);
-        setSubmitted(true); // Optimistically switch to success screen immediately
 
         try {
             const formData = new FormData();
@@ -93,6 +93,7 @@ const UserPanel = () => {
 
             const data = await response.json();
             if (!data || !data.transactionId) throw new Error('No transaction ID returned');
+            setSubmitted(true);
 
             setLastTransactionId(data.transactionId);
             setPhoneNumber('');
@@ -177,7 +178,13 @@ const UserPanel = () => {
                                 </span>
                             </div>
                         </div>
-                        <button type="submit" className="w-full p-2.5 bg-gray-500 text-white border-none rounded cursor-pointer text-base hover:bg-gray-600">Add Transaction</button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className={`w-full p-2.5 text-white border-none rounded cursor-pointer text-base transition-colors ${isSubmitting ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-500 hover:bg-gray-600'}`}
+                        >
+                            {isSubmitting ? 'Submitting...' : 'Add Transaction'}
+                        </button>
                     </form>
                 </div>
             ) : (

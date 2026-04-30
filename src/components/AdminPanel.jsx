@@ -73,9 +73,6 @@ const AdminPanel = () => {
     }, [transactions]);
 
     const handleStatusChange = async (id, newStatus) => {
-        const previousTransactions = [...transactions];
-        
-
         const updateData = { status: newStatus };
         if (newStatus === 'Completed') {
             updateData.completed_at = new Date().toISOString();
