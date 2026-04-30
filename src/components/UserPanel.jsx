@@ -14,7 +14,6 @@ const UserPanel = () => {
     const [searchId, setSearchId] = useState('');
     const [searchResult, setSearchResult] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const paymentInfo = {
         Gcash: 'Gcash Number: 09859722995 JM',
@@ -178,18 +177,7 @@ const UserPanel = () => {
                                 </span>
                             </div>
                         </div>
-                        <button
-                           type="submit"
-                           disabled={isSubmitting}
-                           className="w-full p-2.5 bg-gray-500 text-white border-none rounded cursor-pointer text-base hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                           {isSubmitting ? (
-                               <>
-                                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                   Processing...
-                               </>
-                           ) : 'Add Transaction'}
-                        </button>
+                        <button type="submit" className="w-full p-2.5 bg-gray-500 text-white border-none rounded cursor-pointer text-base hover:bg-gray-600">Add Transaction</button>
                     </form>
                 </div>
             ) : (
@@ -199,9 +187,7 @@ const UserPanel = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                        {isSubmitting ? 'Processing your transaction...' : 'Transaction Submitted!'}
-                    </h2>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Transaction Submitted!</h2>
                     <p className="text-gray-600 mb-6">Your transaction has been added. Please don't spam adding a transaction and wait for your order to be processed.</p>
                     <div className="bg-gray-100 p-3 rounded-lg mb-6 w-full max-w-xs">
                         <span className="text-sm text-gray-500 block">Transaction ID:</span>

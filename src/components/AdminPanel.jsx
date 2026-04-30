@@ -75,12 +75,6 @@ const AdminPanel = () => {
     const handleStatusChange = async (id, newStatus) => {
         const previousTransactions = [...transactions];
         
-        // Optimistic Update: Update UI immediately
-        setTransactions(prev => prev.map(t =>
-            t.id === id
-                ? { ...t, status: newStatus, completed_at: newStatus === 'Completed' ? new Date().toISOString() : null }
-                : t
-        ));
 
         const updateData = { status: newStatus };
         if (newStatus === 'Completed') {
@@ -100,10 +94,10 @@ const AdminPanel = () => {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to update status');
             }
+            await fetchTransactions();
         } catch (error) {
             console.error('Error updating transaction status:', error);
             alert(`Failed to update status: ${error.message}`);
-            setTransactions(previousTransactions); // Revert on error
         }
     };
 
