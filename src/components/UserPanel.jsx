@@ -101,7 +101,6 @@ const UserPanel = () => {
             setModeOfPayment('');
             setNotes('');
             setReceipt(null);
-            document.getElementById('receipt').value = '';
         } catch (error) {
             console.error('Error adding transaction:', error);
             alert(error.message || 'Failed to add transaction. Please try again.');
