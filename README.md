@@ -1,75 +1,98 @@
-# GB Loader App
+# JMxWorrie — GB Loader App
 
-A fast and reliable system for managing data (GB) transactions. This app is a **Progressive Web App (PWA)**, meaning you can install it on your phone and use it just like a regular mobile app.
+> One-tap load loading. Zero hassle.
 
----
-
-## Overview
-
-**GB Loader App** is designed to make buying and managing data packages simple. It provides a smooth experience for users to submit orders and a powerful, real-time dashboard for admins to manage them.
-
-### For Users
-
-- **Easy Ordering**: A simple form to request your data (Phone, Network, and Amount).
-- **Quick Uploads**: Upload your payment receipt directly from your phone's gallery or camera.
-- **Instant Status**: Check if your order is pending, completed, or cancelled at any time.
-
-### For Admins
-
-- **Live Dashboard**: See new orders instantly without refreshing the page, thanks to real-time updates.
-- **Order Management**: Easily update the status of an order or remove old records.
-- **Secure Access**: A protected admin area to ensure only authorized staff can manage transactions.
+![JMxWorrie Hero Banner](public/screenshots/screenshot-desktop.png)
 
 ---
 
-## PWA Features
+## What is JMxWorrie?
 
-As a **Progressive Web App (PWA)**, this project offers:
+A **mobile-first Progressive Web App (PWA)** that makes buying data load as easy as sending a text message. Users submit orders with a receipt, and admins manage everything in **real-time** — no app store download required.
 
-- **Installable**: Add the app to your home screen on Android or iOS for quick access.
-- **Mobile Optimized**: Designed to feel and work like a native mobile application.
-- **Fast & Lightweight**: Optimized for speed and low data usage.
+---
+
+## Features at a Glance
+
+| For Users                                 | For Admins                            |
+| ----------------------------------------- | ------------------------------------- |
+| Simple order form                         | Live dashboard with real-time updates |
+| Upload receipt via camera or gallery      | Change order status with one click    |
+| Instant status tracking by Transaction ID | Secure admin-only access              |
+| Install as PWA on your home screen        | Easy order deletion                   |
+
+---
+
+## How It Works
+
+### User Flow
+
+```
+Fill Form  -->  Upload Receipt  -->  Get Transaction ID  -->  Track Status
+```
+
+### Admin Flow
+
+```
+Login  -->  View Live Orders  -->  Update Status  -->  Done
+```
 
 ---
 
 ## Tech Stack
 
-- **Frontend**: [React 19](https://react.dev/) & [Vite](https://vitejs.dev/) (Fast and modern)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (Clean and responsive)
-- **Backend**: [Vercel Serverless Functions](https://vercel.com/) (Reliable and scalable)
-- **Database & Storage**: [Supabase](https://supabase.com/) (Real-time database and secure file storage)
+**Frontend**
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
+
+**Backend & Infrastructure**
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat&logo=supabase&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
+
+**Security & Auth**
+![bcrypt](https://img.shields.io/badge/bcrypt-00599C?style=flat&logo=bcrypt&logoColor=white)
+![Redis](https://img.shields.io/badge/Upstash_Redis-DC382D?style=flat&logo=redis&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
 
 ---
 
-## 📂 Project Structure
+## Installation
 
-```text
-Project Root Directory
-├── 📂 api/                   <-- Backend logic (Vercel)
-│   ├── 📄 login.js           <-- Admin login
-│   ├── 📄 verify.js          <-- Check if admin is logged in
-│   └── 📂 admin/             <-- Admin tools
-│       ├── 📄 transactions.js <-- Get all orders
-│       ├── 📄 update-status.js <-- Change order status
-│       └── 📄 delete-transaction.js <-- Remove an order
-├── 📂 src/                   <-- Frontend code (React)
-│   ├── 📂 components/        <-- UI parts
-│   │   ├── 📄 AdminPanel.jsx <-- Admin dashboard
-│   │   ├── 📄 UserPanel.jsx  <-- User order form
-│   │   └── 📄 Login.jsx      <-- Admin login page
-│   └── 📂 utils/             <-- Helper tools
-│       └── 📄 supabaseClient.js <-- Connect to database
-├── 📂 supabase/              <-- Database & Cloud functions
-│   └── 📂 functions/         <-- Receipt upload logic
-└── 📂 public/                <-- PWA & App icons
-```
+### Download APK (Recommended for Users)
+
+Download the latest APK directly from the [Releases Tab](https://github.com/worriee/web-loaderbyjimzxworrie/releases).
+
+1. Go to the [Releases page](https://github.com/worriee/web-loaderbyjimzxworrie/releases)
+2. Download the latest `.apk` file
+3. Open the APK on your Android device
+4. Allow installation from unknown sources if prompted
+5. Done — the app is ready to use
+
+### Install as PWA (Alternative)
+
+1. Visit the live app URL in your browser
+2. Tap **"Add to Home Screen"** when prompted
+3. Open from your home screen — it works like a native app
 
 ---
 
-## 🔄 How it works
+## Security
 
-**User Side:**
-`Fill Form` → `Upload Receipt` → `Order Saved` → `Check Status`
+This application implements industry-standard security practices:
 
-**Admin Side:**
-`Login` → `View Live Orders` → `Update Status` → `Delete Orders`
+- **Bcrypt Password Hashing** — Admin passwords are never stored in plain text
+- **JWT httpOnly Cookies** — Session tokens are inaccessible to JavaScript
+- **CORS Origin Validation** — Only trusted domains can access the API
+- **Rate Limiting** — Brute-force and spam protection via Upstash Redis
+- **File Upload Validation** — 5MB size limit, images only (JPG, PNG, WebP)
+- **Server-Side Auth Checks** — All admin routes verify JWT before processing
+
+---
+
+## License
+
+MIT License
+
+Built with **James x Worrie**
