@@ -7,7 +7,7 @@ const Popup = ({ isOpen, onClose, onAdminLoginClick, isAdmin, onAdminLogout }) =
     }
 
     return (
-        <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
             <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center relative w-[300px]" onClick={(e) => e.stopPropagation()}>
                 <img src={userIcon} alt="User" className="w-20 h-20 rounded-full mb-4" />
                 {isAdmin ? (

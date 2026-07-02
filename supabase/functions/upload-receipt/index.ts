@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const getCorsHeaders = (origin: string | null) => {
   const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN");
+
   const headers = new Headers({
     "Access-Control-Allow-Headers":
       "authorization, x-client-info, apikey, content-type",
@@ -15,13 +16,61 @@ const getCorsHeaders = (origin: string | null) => {
   return headers;
 };
 
+// Rate Limiter Helper for Deno
+async function isRateLimited(ip: string) {
+  const REDIS_URL = Deno.env.get("UPSTASH_REDIS_REST_URL");
+  const REDIS_TOKEN = Deno.env.get("UPSTASH_REDIS_REST_TOKEN");
+  const key = `ratelimit:upload:${ip}`;
+  const limit = 10;
+  const windowSeconds = 60 * 60; // 1 hour
+
+  const response = await fetch(`${REDIS_URL}/incr/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+  });
+  const data = await response.json();
+  const count = typeof data === "object" ? data.result : data;
+
+  if (count === 1) {
+    await fetch(
+      `${REDIS_URL}/expire/${encodeURIComponent(key)}/${windowSeconds}`,
+      {
+        headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+      },
+    );
+  }
+
+  return count > limit;
+}
+
 serve(async (req) => {
+  const origin = req.headers.get("origin");
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: getCorsHeaders(req.headers.get("origin")),
-    });
+    return new Response("ok", { headers: getCorsHeaders(origin) });
   }
+
+  // --- RATE LIMITING START ---
+  // Get IP from Supabase request headers
+  const ip =
+    req.headers.get("x-real-ip") ||
+    req.headers.get("x-forwarded-for") ||
+    "unknown";
+  if (await isRateLimited(ip)) {
+    return new Response(
+      JSON.stringify({
+        error: "Too many uploads. Please try again in an hour.",
+      }),
+      {
+        status: 429,
+        headers: {
+          ...Object.fromEntries(getCorsHeaders(origin)),
+          "Content-Type": "application/json",
+        },
+      },
+    );
+  }
+  // --- RATE LIMITING END ---
 
   try {
     const formData = await req.formData();
@@ -35,6 +84,38 @@ serve(async (req) => {
     if (!file || !phoneNumber || !network || !modeOfPayment || !notes) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers: {
+            ...Object.fromEntries(getCorsHeaders(req.headers.get("origin"))),
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    }
+
+    // File Validation: Max 5MB and Image types only
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+    if (file.size > MAX_FILE_SIZE) {
+      return new Response(
+        JSON.stringify({ error: "File too large. Maximum size is 5MB." }),
+        {
+          status: 400,
+          headers: {
+            ...Object.fromEntries(getCorsHeaders(req.headers.get("origin"))),
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    }
+
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      return new Response(
+        JSON.stringify({
+          error: "Invalid file type. Please upload an actual receipt.",
+        }),
         {
           status: 400,
           headers: {

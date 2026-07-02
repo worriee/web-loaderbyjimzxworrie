@@ -18,7 +18,7 @@ const UserPanel = () => {
 
   const paymentInfo = {
     Gcash: "Gcash Number: 09859722995 JM",
-    Maya: "Maya Number: N/A",
+    //Maya: "Maya Number: N/A",
   };
 
   const handlePaymentChange = (e) => {
@@ -58,15 +58,29 @@ const UserPanel = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (!receipt) {
-      alert("Please upload a proof of payment.");
-      return;
-    }
+        if (!receipt) {
+            alert('Please upload a proof of payment.');
+            return;
+        }
 
-    setIsSubmitting(true);
+        // Client-side validation: Max 5MB and Image types only
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+        const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+        if (receipt.size > MAX_FILE_SIZE) {
+            alert('File too large. Maximum size is 5MB.');
+            return;
+        }
+
+        if (!ALLOWED_MIME_TYPES.includes(receipt.type)) {
+            alert('Invalid file type. Please upload an image (JPG, PNG, or WebP).');
+            return;
+        }
+
+        setIsSubmitting(true);
 
     try {
       const formData = new FormData();
@@ -174,7 +188,7 @@ const UserPanel = () => {
                     Select a payment method
                   </option>
                   <option value="Gcash">Gcash</option>
-                  <option value="Maya">Maya</option>
+                  {/* <option value="Maya">Maya</option> */}
                 </select>
               </div>
               {paymentDetails && (
@@ -250,8 +264,8 @@ const UserPanel = () => {
               Transaction Submitted!
             </h2>
             <p className="text-gray-600 mb-6">
-              Your transaction has been added. Please don't spam adding a
-              transaction and wait for your order to be processed.
+              Your transaction has been added. Wait for your order to be
+              processed.
             </p>
             <div className="bg-gray-100 p-3 rounded-lg mb-6 w-full max-w-xs">
               <span className="text-sm text-gray-500 block">

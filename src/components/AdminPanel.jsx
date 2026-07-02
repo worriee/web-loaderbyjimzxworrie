@@ -40,38 +40,6 @@ const AdminPanel = () => {
         };
     }, []);
 
-    useEffect(() => {
-        const timer = setTimeout(async () => {
-            const twelveHours = 12 * 60 * 60 * 1000;
-            const now = Date.now();
-
-            const transactionsToDelete = transactions.filter(transaction => {
-                if (transaction.status === 'Completed' && transaction.completed_at) {
-                    const completedAt = new Date(transaction.completed_at).getTime();
-                    return now - completedAt > twelveHours;
-                }
-                return false;
-            });
-
-            if (transactionsToDelete.length > 0) {
-                if (window.confirm(`There are ${transactionsToDelete.length} completed transactions older than 12 hours. Do you want to delete them?`)) {
-                    const idsToDelete = transactionsToDelete.map(t => t.id);
-                    const { error } = await supabase
-                        .from('transactions')
-                        .delete()
-                        .in('id', idsToDelete);
-
-                    if (error) {
-                        console.error('Error deleting old transactions:', error);
-                    } else {
-                        fetchTransactions();
-                    }
-                }
-            }
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, [transactions]);
-
     const handleStatusChange = async (id, newStatus) => {
         const updateData = { status: newStatus };
         if (newStatus === 'Completed') {
