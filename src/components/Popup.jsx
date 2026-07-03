@@ -14,7 +14,7 @@ const Popup = ({
 
   return (
     <div
-      className="fixed inset-0 bg-transparen bg-opacity-50 flex justify-center items-center z-50"
+      className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center z-50"
       onClick={onClose}
     >
       <div
